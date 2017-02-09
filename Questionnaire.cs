@@ -23,6 +23,7 @@ namespace RepetiteurLivrets {
         int iQTimer;
         static System.Globalization.CultureInfo ci;
         static SpeechRecognitionEngine sre;
+        bool bReconnaissanceActivee = false;
 
         /// <summary>
         /// Constructeur par défaut
@@ -37,14 +38,14 @@ namespace RepetiteurLivrets {
         /// <param name="p">Objet "Partie" qui contient les attributs d'une partie (difficulté, classe)</param>
         public Questionnaire(Partie p) {
             InitializeComponent();
-            // On initialise la reconnaissance vocale
-            InitRecognition();
             // On crée la liste de questions en fonction des paramètres
             listeQuestions = CreerQuestions(p);
             // On crée la liste vide de réponses
             listeReponses = new Reponse[listeQuestions.Length];
             // On assigne le paramètre partie à la variable partie
             partieEnCours = p;
+            // On initialise la reconnaissance vocale
+            InitRecognition();
 
             // On cache chaque contrôle avant de donner le top
             tbxMult1.Visible = false;
@@ -107,16 +108,16 @@ namespace RepetiteurLivrets {
                     btnAccept.PerformClick();
                 }
             }
-            // Lancement de la reconnaissance vocale lorsqu'espace est enfoncé
-            else if (e.KeyCode == Keys.Space) {
+            // Lancement de la reconnaissance vocale lorsque F1 est enfoncé et qu'il n'écoute pas déjà
+            else if (e.KeyCode == Keys.F1 && !lblListening.Visible && bReconnaissanceActivee) {
                 sre.RecognizeAsync(RecognizeMode.Multiple);
-                lblListening.Visible = true; 
+                lblListening.Visible = true;
             } 
         }
 
         private void Questionnaire_KeyUp(object sender, KeyEventArgs e) {
             // Arrêt de la reconnaissance vocale
-            if (e.KeyCode == Keys.Space) {
+            if (e.KeyCode == Keys.F1 && lblListening.Visible && bReconnaissanceActivee) {
                 sre.RecognizeAsyncCancel();
                 lblListening.Visible = false;
             }
@@ -342,7 +343,6 @@ namespace RepetiteurLivrets {
                 AfficheResultats.Focus();
                 this.Close();
             }
-
         }
 
         /// <summary>
@@ -422,13 +422,27 @@ namespace RepetiteurLivrets {
             s.SpeakAsync(strTTS);
         }
 
+        /// <summary>
+        /// Méthode qui initialise le moteur de reconnaissance vocale
+        /// </summary>
         public void InitRecognition() {
-            ci = new System.Globalization.CultureInfo("fr-FR");
-            sre = new SpeechRecognitionEngine(ci);
-            sre.SetInputToDefaultAudioDevice();
-            sre.SpeechRecognized += sre_SpeechRecognized;
-            Grammar g_Numbers = GetResponseGrammar();
-            sre.LoadGrammarAsync(g_Numbers);
+            // Active la reconnaissance vocale si un micro est configuré
+            try {
+                sre.SetInputToDefaultAudioDevice();
+                bReconnaissanceActivee = true;
+            }
+            // Sinon désactive la reconnaissance vocale
+            catch {
+                bReconnaissanceActivee = false;
+            }
+
+            if (bReconnaissanceActivee) {
+                ci = new System.Globalization.CultureInfo("fr-FR");
+                sre = new SpeechRecognitionEngine(ci);
+                sre.SpeechRecognized += sre_SpeechRecognized;
+                Grammar g_Numbers = GetResponseGrammar();
+                sre.LoadGrammarAsync(g_Numbers);
+            }
         }
 
         /// <summary>
@@ -449,18 +463,14 @@ namespace RepetiteurLivrets {
         /// <summary>
         /// Méthode qui remplit les textbox avec la réponse donnée sous forme de string
         /// </summary>
-        /// <param name="reponse"></param>
+        /// <param name="reponse">String contenant la réponse sous forme X FOIS Y EGAL Z</param>
         private void RemplirChamps(string reponse) {
-            string m1;
-            string m2;
-            string p;
-
             // La réponse est sous forme "X FOIS Y EGAL Z"
             string[] splitReponse = reponse.Split(' ');
 
-            m1 = splitReponse[0];
-            m2 = splitReponse[2];
-            p = splitReponse[4];
+            string m1 = splitReponse[0];
+            string m2 = splitReponse[2];
+            string p = splitReponse[4];
 
             if (!tbxMult1.ReadOnly)
                 tbxMult1.Text = m1;
@@ -485,8 +495,8 @@ namespace RepetiteurLivrets {
             }
 
             // Création des listes de nombres
-            string[] numbers = new string[iMaxMult];
-            string[] bigNumbers = new string[iMaxMult*iMaxMult+1];
+            string[] numbers = new string[iMaxMult+1];
+            string[] bigNumbers = new string[(iMaxMult*iMaxMult)+1];
 
             for (int i = 0; i < numbers.Length; ++i) {
                 numbers[i] = i.ToString();
@@ -497,7 +507,7 @@ namespace RepetiteurLivrets {
             }
 
             Choices ch_Numbers = new Choices(numbers);
-            Choices ch_BigNumbers = new Choices();
+            Choices ch_BigNumbers = new Choices(bigNumbers);
 
             GrammarBuilder gb_result = new GrammarBuilder();
             gb_result.Append(ch_Numbers);
