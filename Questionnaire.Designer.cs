@@ -44,6 +44,7 @@
             this.lblQTimerText = new System.Windows.Forms.Label();
             this.lblNumQuestionMax = new System.Windows.Forms.Label();
             this.pgbTimer = new System.Windows.Forms.ProgressBar();
+            this.lblListening = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // tmrDecompte
@@ -193,11 +194,22 @@
             this.pgbTimer.TabIndex = 8;
             this.pgbTimer.Value = 100;
             // 
+            // lblListening
+            // 
+            this.lblListening.AutoSize = true;
+            this.lblListening.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblListening.Location = new System.Drawing.Point(267, 13);
+            this.lblListening.Name = "lblListening";
+            this.lblListening.Size = new System.Drawing.Size(132, 25);
+            this.lblListening.TabIndex = 9;
+            this.lblListening.Text = "< A l\'écoute >";
+            // 
             // Questionnaire
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(415, 192);
+            this.Controls.Add(this.lblListening);
             this.Controls.Add(this.pgbTimer);
             this.Controls.Add(this.lblQTimerText);
             this.Controls.Add(this.lblStartTimer);
@@ -220,6 +232,7 @@
             this.Text = "Partie";
             this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnKeyDownHandler);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Questionnaire_KeyUp);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -241,5 +254,6 @@
         private System.Windows.Forms.Label lblQTimerText;
         private System.Windows.Forms.Label lblNumQuestionMax;
         private System.Windows.Forms.ProgressBar pgbTimer;
+        private System.Windows.Forms.Label lblListening;
     }
 }

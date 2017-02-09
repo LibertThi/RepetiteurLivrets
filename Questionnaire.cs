@@ -21,6 +21,8 @@ namespace RepetiteurLivrets {
         Reponse[] listeReponses;
         Partie partieEnCours;
         int iQTimer;
+        static System.Globalization.CultureInfo ci;
+        static SpeechRecognitionEngine sre;
 
         /// <summary>
         /// Constructeur par défaut
@@ -35,7 +37,8 @@ namespace RepetiteurLivrets {
         /// <param name="p">Objet "Partie" qui contient les attributs d'une partie (difficulté, classe)</param>
         public Questionnaire(Partie p) {
             InitializeComponent();
-            
+            // On initialise la reconnaissance vocale
+            InitRecognition();
             // On crée la liste de questions en fonction des paramètres
             listeQuestions = CreerQuestions(p);
             // On crée la liste vide de réponses
@@ -56,6 +59,7 @@ namespace RepetiteurLivrets {
             btnAccept.Visible = false;
             lblQTimerText.Visible = false;
             pgbTimer.Visible = false;
+            lblListening.Visible = false;
 
             // On affiche le nb de questions max dans un contrôle
             lblNumQuestionMax.Text = listeQuestions.Length.ToString();
@@ -102,6 +106,18 @@ namespace RepetiteurLivrets {
                 else {
                     btnAccept.PerformClick();
                 }
+            }
+            // Lancement de la reconnaissance vocale lorsqu'espace est enfoncé
+            else if (e.KeyCode == Keys.Space) {
+                sre.RecognizeAsync(RecognizeMode.Multiple);
+                lblListening.Visible = true; 
+            } 
+        }
+
+        private void Questionnaire_KeyUp(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Space) {
+                sre.RecognizeAsyncCancel();
+                lblListening.Visible = false;
             }
         }
 
@@ -405,6 +421,78 @@ namespace RepetiteurLivrets {
             s.SpeakAsync(strTTS);
         }
 
-        
+        public void InitRecognition() {
+            ci = new System.Globalization.CultureInfo("fr-FR");
+            sre = new SpeechRecognitionEngine(ci);
+            sre.SetInputToDefaultAudioDevice();
+            sre.SpeechRecognized += sre_SpeechRecognized;
+            Grammar g_Numbers = GetResponseGrammar();
+            sre.LoadGrammarAsync(g_Numbers);
+        }
+
+        /// <summary>
+        /// Event handler déclenché lorsque le moteur de reconnaissance vocale a reconnu une grammaire
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e) {
+            string txt = e.Result.Text;
+            float conf = e.Result.Confidence;
+            if (conf < 0.65) return;
+            this.Invoke(new MethodInvoker(() =>
+            {
+                
+            }));
+        }
+
+        /// <summary>
+        /// Méthode qui remplit les textbox avec la réponse donnée sous forme de string
+        /// </summary>
+        /// <param name="reponse"></param>
+        private void RemplirChamps(string reponse) {
+            int iMult1;
+            int iMult2;
+            int iProduit;
+        }
+
+        /// <summary>
+        /// Méthode qui retourne la grammaire nécessaire à la reconnaissance vocale d'une réponse sous la forme suivante : nb FOIS nb EGAL nb
+        /// </summary>
+        /// <returns>Grammaire de la réponse</returns>
+        private Grammar GetResponseGrammar() {
+            // Définition des multiples maximums pour mieux cibler la reconnaissance
+            int iMaxMult = 0;
+            if (partieEnCours.Niveau == "6H") {
+                iMaxMult = 9;
+            }
+            else if (partieEnCours.Niveau == "7H"){
+                iMaxMult = 12;
+            }
+
+            // Création des listes de nombres
+            string[] numbers = new string[iMaxMult];
+            string[] bigNumbers = new string[iMaxMult*iMaxMult+1];
+
+            for (int i = 0; i < numbers.Length; ++i) {
+                numbers[i] = i.ToString();
+            }
+
+            for (int i = 0; i < bigNumbers.Length; ++i) {
+                bigNumbers[i] = i.ToString();
+            }
+
+            Choices ch_Numbers = new Choices(numbers);
+            Choices ch_BigNumbers = new Choices();
+
+            GrammarBuilder gb_result = new GrammarBuilder();
+            gb_result.Append(ch_Numbers);
+            gb_result.Append("fois");
+            gb_result.Append(ch_Numbers);
+            gb_result.Append("égal");
+            gb_result.Append(ch_BigNumbers);
+
+            Grammar g_result = new Grammar(gb_result);
+            return g_result;
+        }
     }
 }
