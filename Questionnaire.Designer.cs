@@ -45,6 +45,7 @@
             this.lblNumQuestionMax = new System.Windows.Forms.Label();
             this.pgbTimer = new System.Windows.Forms.ProgressBar();
             this.lblListening = new System.Windows.Forms.Label();
+            this.cbxReconnaissance = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // tmrDecompte
@@ -197,18 +198,31 @@
             // lblListening
             // 
             this.lblListening.AutoSize = true;
-            this.lblListening.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblListening.Location = new System.Drawing.Point(267, 13);
+            this.lblListening.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblListening.ForeColor = System.Drawing.Color.Red;
+            this.lblListening.Location = new System.Drawing.Point(254, 32);
             this.lblListening.Name = "lblListening";
-            this.lblListening.Size = new System.Drawing.Size(132, 25);
+            this.lblListening.Size = new System.Drawing.Size(94, 17);
             this.lblListening.TabIndex = 9;
             this.lblListening.Text = "< A l\'écoute >";
+            // 
+            // cbxReconnaissance
+            // 
+            this.cbxReconnaissance.AutoSize = true;
+            this.cbxReconnaissance.Location = new System.Drawing.Point(257, 12);
+            this.cbxReconnaissance.Name = "cbxReconnaissance";
+            this.cbxReconnaissance.Size = new System.Drawing.Size(150, 17);
+            this.cbxReconnaissance.TabIndex = 10;
+            this.cbxReconnaissance.Text = "Reconnaissance continue";
+            this.cbxReconnaissance.UseVisualStyleBackColor = true;
+            this.cbxReconnaissance.CheckedChanged += new System.EventHandler(this.cbxReconnaissance_CheckedChanged);
             // 
             // Questionnaire
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(415, 192);
+            this.Controls.Add(this.cbxReconnaissance);
             this.Controls.Add(this.lblListening);
             this.Controls.Add(this.pgbTimer);
             this.Controls.Add(this.lblQTimerText);
@@ -255,5 +269,6 @@
         private System.Windows.Forms.Label lblNumQuestionMax;
         private System.Windows.Forms.ProgressBar pgbTimer;
         private System.Windows.Forms.Label lblListening;
+        private System.Windows.Forms.CheckBox cbxReconnaissance;
     }
 }

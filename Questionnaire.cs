@@ -61,6 +61,7 @@ namespace RepetiteurLivrets {
             lblQTimerText.Visible = false;
             pgbTimer.Visible = false;
             lblListening.Visible = false;
+            cbxReconnaissance.Visible = false;
 
             // On affiche le nb de questions max dans un contrôle
             lblNumQuestionMax.Text = listeQuestions.Length.ToString();
@@ -109,17 +110,15 @@ namespace RepetiteurLivrets {
                 }
             }
             // Lancement de la reconnaissance vocale lorsque F1 est enfoncé et qu'il n'écoute pas déjà
-            else if (e.KeyCode == Keys.F1 && !lblListening.Visible && bReconnaissanceActivee) {
-                sre.RecognizeAsync(RecognizeMode.Multiple);
-                lblListening.Visible = true;
+            else if (e.KeyCode == Keys.F1 && !cbxReconnaissance.Checked) {
+                StartListening();
             } 
         }
 
         private void Questionnaire_KeyUp(object sender, KeyEventArgs e) {
             // Arrêt de la reconnaissance vocale
-            if (e.KeyCode == Keys.F1 && lblListening.Visible && bReconnaissanceActivee) {
-                sre.RecognizeAsyncCancel();
-                lblListening.Visible = false;
+            if (e.KeyCode == Keys.F1 && !cbxReconnaissance.Checked) {
+                StopListening();
             }
         }
 
@@ -141,6 +140,7 @@ namespace RepetiteurLivrets {
             btnAccept.Visible = true;
             lblQTimerText.Visible = true;
             pgbTimer.Visible = true;
+            cbxReconnaissance.Visible = true;
 
             // On démarre le timer pour les questions
             lblQTimer.Text = String.Format("{0:0.0}",(Convert.ToDouble(iQTimer)/10));
@@ -426,6 +426,8 @@ namespace RepetiteurLivrets {
         /// Méthode qui initialise le moteur de reconnaissance vocale
         /// </summary>
         public void InitRecognition() {
+            ci = new System.Globalization.CultureInfo("fr-FR");
+            sre = new SpeechRecognitionEngine(ci);
             // Active la reconnaissance vocale si un micro est configuré
             try {
                 sre.SetInputToDefaultAudioDevice();
@@ -436,12 +438,12 @@ namespace RepetiteurLivrets {
                 bReconnaissanceActivee = false;
             }
 
-            if (bReconnaissanceActivee) {
-                ci = new System.Globalization.CultureInfo("fr-FR");
-                sre = new SpeechRecognitionEngine(ci);
+            if (bReconnaissanceActivee) {                
                 sre.SpeechRecognized += sre_SpeechRecognized;
-                Grammar g_Numbers = GetResponseGrammar();
-                sre.LoadGrammarAsync(g_Numbers);
+                // Charge la grammaire de la réponse
+                sre.LoadGrammarAsync(GetResponseGrammar());
+                // Charge la grammaire des commandes
+                sre.LoadGrammarAsync(GetCommandsGrammar());
             }
         }
 
@@ -456,7 +458,22 @@ namespace RepetiteurLivrets {
             if (conf < 0.65) return;
             this.Invoke(new MethodInvoker(() =>
             {
-                RemplirChamps(txt);
+                // Vérifie si c'est une commande ou si c'est une réponse
+                switch (txt) {
+                    case "effacer":
+                        EffacerChamps();
+                        break;
+                    case "stop":
+                        this.Close();
+                        break;
+                    case "next":
+                        btnAccept.PerformClick();
+                        break;
+                    default:
+                        RemplirChamps(txt);
+                        btnAccept.Focus();
+                        break;
+                }
             }));
         }
 
@@ -478,6 +495,26 @@ namespace RepetiteurLivrets {
                 tbxMult2.Text = m2;
             if (!tbxProduit.ReadOnly)
                 tbxProduit.Text = p;
+        }
+
+        /// <summary>
+        /// Méthode qui lance l'écoute de la reconnaissance vocale
+        /// </summary>
+        private void StartListening() {
+            if (!lblListening.Visible && bReconnaissanceActivee) {
+                sre.RecognizeAsync(RecognizeMode.Multiple);
+                lblListening.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// Méthode qui arrête l'écoute de la reconnaissance vocale
+        /// </summary>
+        private void StopListening() {
+            if (lblListening.Visible && bReconnaissanceActivee) {
+                sre.RecognizeAsyncCancel();
+                lblListening.Visible = false;
+            }   
         }
 
         /// <summary>
@@ -518,6 +555,46 @@ namespace RepetiteurLivrets {
 
             Grammar g_result = new Grammar(gb_result);
             return g_result;
+        }
+
+        /// <summary>
+        /// Méthode qui retourne la grammaire avec toutes les commandes vocales disponibles
+        /// </summary>
+        /// <returns>Retourne la grammaire des commandes</returns>
+        private Grammar GetCommandsGrammar() {
+            GrammarBuilder gb_result = new GrammarBuilder();
+            string[] commands = new string[] {"next", "effacer", "stop"};
+            Choices ch_commands = new Choices(commands);
+            gb_result = ch_commands;
+
+            Grammar g_result = new Grammar(gb_result);
+            return g_result;
+        }
+
+        /// <summary>
+        /// Méthode qui efface les entrées de l'utilisateur dans les champs possibles
+        /// </summary>
+        private void EffacerChamps() {
+            if (!tbxMult1.ReadOnly)
+                tbxMult1.Text = "";
+            if (!tbxMult2.ReadOnly)
+                tbxMult2.Text = "";
+            if (!tbxProduit.ReadOnly)
+                tbxProduit.Text = "";
+        }
+
+        /// <summary>
+        /// Méthode déclenchée lors du changement d'état de la checkbox. Permet d'activer ou désactiver la reconnaissance vocale continue
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbxReconnaissance_CheckedChanged(object sender, EventArgs e) {
+            if (cbxReconnaissance.Checked) {
+                StartListening();
+            }
+            else {
+                StopListening();
+            }
         }
     }
 }
