@@ -115,6 +115,7 @@ namespace RepetiteurLivrets {
         }
 
         private void Questionnaire_KeyUp(object sender, KeyEventArgs e) {
+            // Arrêt de la reconnaissance vocale
             if (e.KeyCode == Keys.Space) {
                 sre.RecognizeAsyncCancel();
                 lblListening.Visible = false;
@@ -441,7 +442,7 @@ namespace RepetiteurLivrets {
             if (conf < 0.65) return;
             this.Invoke(new MethodInvoker(() =>
             {
-                
+                RemplirChamps(txt);
             }));
         }
 
@@ -450,9 +451,23 @@ namespace RepetiteurLivrets {
         /// </summary>
         /// <param name="reponse"></param>
         private void RemplirChamps(string reponse) {
-            int iMult1;
-            int iMult2;
-            int iProduit;
+            string m1;
+            string m2;
+            string p;
+
+            // La réponse est sous forme "X FOIS Y EGAL Z"
+            string[] splitReponse = reponse.Split(' ');
+
+            m1 = splitReponse[0];
+            m2 = splitReponse[2];
+            p = splitReponse[4];
+
+            if (!tbxMult1.ReadOnly)
+                tbxMult1.Text = m1;
+            if (!tbxMult2.ReadOnly)
+                tbxMult2.Text = m2;
+            if (!tbxProduit.ReadOnly)
+                tbxProduit.Text = p;
         }
 
         /// <summary>
