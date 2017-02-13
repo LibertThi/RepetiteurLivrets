@@ -110,14 +110,14 @@ namespace RepetiteurLivrets {
                 }
             }
             // Lancement de la reconnaissance vocale lorsque F1 est enfoncé et qu'il n'écoute pas déjà
-            else if (e.KeyCode == Keys.F1 && !cbxReconnaissance.Checked) {
+            else if (e.KeyCode == Keys.ShiftKey && !cbxReconnaissance.Checked) {
                 StartListening();
             } 
         }
 
         private void Questionnaire_KeyUp(object sender, KeyEventArgs e) {
             // Arrêt de la reconnaissance vocale
-            if (e.KeyCode == Keys.F1 && !cbxReconnaissance.Checked) {
+            if (e.KeyCode == Keys.ShiftKey && !cbxReconnaissance.Checked) {
                 StopListening();
             }
         }
@@ -140,7 +140,8 @@ namespace RepetiteurLivrets {
             btnAccept.Visible = true;
             lblQTimerText.Visible = true;
             pgbTimer.Visible = true;
-            cbxReconnaissance.Visible = true;
+            if (bReconnaissanceActivee)
+                cbxReconnaissance.Visible = true;
 
             // On démarre le timer pour les questions
             lblQTimer.Text = String.Format("{0:0.0}",(Convert.ToDouble(iQTimer)/10));
