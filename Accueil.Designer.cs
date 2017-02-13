@@ -32,9 +32,9 @@
             this.btnValider = new System.Windows.Forms.Button();
             this.lblNomText = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.pbxLogo = new System.Windows.Forms.PictureBox();
-            this.cbxJoueur = new System.Windows.Forms.ComboBox();
             this.btnExit = new System.Windows.Forms.Button();
+            this.cbxJoueur = new System.Windows.Forms.ComboBox();
+            this.pbxLogo = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLogo)).BeginInit();
             this.SuspendLayout();
@@ -74,15 +74,18 @@
             this.panel1.Size = new System.Drawing.Size(311, 149);
             this.panel1.TabIndex = 3;
             // 
-            // pbxLogo
+            // btnExit
             // 
-            this.pbxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbxLogo.Image")));
-            this.pbxLogo.Location = new System.Drawing.Point(12, 12);
-            this.pbxLogo.Name = "pbxLogo";
-            this.pbxLogo.Size = new System.Drawing.Size(311, 111);
-            this.pbxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pbxLogo.TabIndex = 4;
-            this.pbxLogo.TabStop = false;
+            this.btnExit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExit.Location = new System.Drawing.Point(228, 87);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(64, 44);
+            this.btnExit.TabIndex = 6;
+            this.btnExit.Text = "Quitter";
+            this.btnExit.UseVisualStyleBackColor = false;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // cbxJoueur
             // 
@@ -97,18 +100,15 @@
             this.cbxJoueur.DropDown += new System.EventHandler(this.MaJ_Liste_Joueurs);
             this.cbxJoueur.Enter += new System.EventHandler(this.CheckBox_OnEnter);
             // 
-            // btnExit
+            // pbxLogo
             // 
-            this.btnExit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExit.Location = new System.Drawing.Point(228, 87);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(64, 44);
-            this.btnExit.TabIndex = 6;
-            this.btnExit.Text = "Quitter";
-            this.btnExit.UseVisualStyleBackColor = false;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            this.pbxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbxLogo.Image")));
+            this.pbxLogo.Location = new System.Drawing.Point(12, 12);
+            this.pbxLogo.Name = "pbxLogo";
+            this.pbxLogo.Size = new System.Drawing.Size(311, 111);
+            this.pbxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pbxLogo.TabIndex = 4;
+            this.pbxLogo.TabStop = false;
             // 
             // Accueil
             // 
@@ -118,6 +118,7 @@
             this.Controls.Add(this.pbxLogo);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Accueil";

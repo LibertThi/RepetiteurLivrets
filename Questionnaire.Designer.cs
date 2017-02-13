@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Questionnaire));
             this.tmrDecompte = new System.Windows.Forms.Timer(this.components);
             this.lblNumQuestionText = new System.Windows.Forms.Label();
             this.tbxMult1 = new System.Windows.Forms.TextBox();
@@ -238,6 +239,7 @@
             this.Controls.Add(this.lblNumQuestion);
             this.Controls.Add(this.lblNumQuestionText);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
